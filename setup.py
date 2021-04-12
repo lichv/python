@@ -1,24 +1,24 @@
-# coding=utf-8
+from distutils.core import setup
+from setuptools import find_packages
 
-import setuptools
-
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
-setuptools.setup(
-    name="lichv.utility",
-    version="0.0.1",
-    author="lichv",
-    author_email="lichvy@126.com",
-    description="Utility tools with mongodb,mysqldb,sms,semail,brower",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://github.com/lichv/python",
-    packages=setuptools.find_packages(),
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
-    python_requires='>=3.6',
+setup(
+	name = 'lichv',
+	version = '0.0.25',
+	description = 'Utility tools with mysqldb,postgresql,utils',
+	long_description = 'Utility tools with mysqldb,postgresql,utils', 
+	author = 'lichv',
+	author_email = 'lichvy@126.com',
+	url = 'https://github.com/lichv/python',
+	license = '',
+	install_requires = [
+		'requests>=2.25.1',
+		'pymysql>=0.9.3',
+		'psycopg2>=2.8.6',
+		'bs4>=0.0.1',
+	],
+	python_requires='>=3.6',
+	keywords = '',
+	packages = find_packages('src'),
+	package_dir = {'':'src'},
+	include_package_data = True,
 )

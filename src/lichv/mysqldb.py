@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
 import pymysql
 import threading
 import logging
@@ -15,7 +18,8 @@ class MysqlDBService(object):
 	def __init__(self, *args, **kwargs):
 		self.logger = logging.getLogger('MysqlDBService')
 		self.connection_kwargs = kwargs
-
+		pymysql.install_as_MySQLdb()
+		setattr(pymysql, 'escape', self.mysqldb_escape)
 		self.connection()
 		
 
@@ -23,7 +27,7 @@ class MysqlDBService(object):
 		kwargs = self.connection_kwargs
 		if 'host' in kwargs and 'user' in kwargs and 'passwd' in kwargs :
 			host = kwargs['host']
-			port = kwargs['port'] if 'port' in kwargs else 3306
+			port = int(kwargs['port']) if 'port' in kwargs else 3306
 			user = kwargs['user']
 			passwd = kwargs['passwd']
 			charset = kwargs['charset'] if 'charset' in kwargs else 'utf8'
@@ -110,11 +114,11 @@ class MysqlDBService(object):
 		data = deepcopy(input_data)
 		if input_key in data:
 			new_id = data[input_key]
-			oldData = self.getOne(table, {input_key:new_id})
+			oldData = self.getOne(table, {input_key:new_id},'*',[(input_key,1)])
 			if oldData:
 				update_data = {}
 				for key in data:
-					if key not in ["id"]:
+					if key not in [input_key]:
 						if (key in oldData and data[key] != oldData[key]) or (key not in oldData):
 							if type(data[key]).__name__=='bytes':
 								update_data[key] = data[key].decode('utf-8')
@@ -128,7 +132,7 @@ class MysqlDBService(object):
 			new_id = self.add(table, data)
 
 		if new_id:
-			result = self.getOne(table, {"id":new_id})
+			result = self.getOne(table, {input_key:new_id},'*',[(input_key,1)])
 		return result
 
 	def add(self, table, input_data):
@@ -205,8 +209,8 @@ class MysqlDBService(object):
 			tmp = []
 			for key in columns:
 				if key in data:
-					value = str(data[key])
-					tmp.append(pymysql.escape_string(value))
+					value = pymysql.escape(str(data[key]))
+					tmp.append(value)
 				else:
 					tmp.append('')
 			values.append(tmp)
@@ -260,7 +264,7 @@ class MysqlDBService(object):
 					tmp = query[key]
 				for k in tmp:
 					opeartor = k
-					value = pymysql.escape_string(str(tmp[k]))
+					value = pymysql.escape(str(tmp[k]))
 				sql += key + ' ' + opeartor + ' "'+ value + '" and '
 		return sql[0:-4]
 
@@ -379,6 +383,15 @@ class MysqlDBService(object):
 				if cur:
 					cur.close()
 		return count
+
+	def mysqldb_escape(self, value, conv_dict=''):
+		from pymysql.converters import encoders
+		vtype = type(value)
+		# note: you could provide a default:
+		# PY2: encoder = encoders.get(vtype, escape_str)
+		# PY3: encoder = encoders.get(vtype, escape_unicode)
+		encoder = encoders.get(vtype)
+		return encoder(value)
 
 	def close(self):
 		if self.connect:
