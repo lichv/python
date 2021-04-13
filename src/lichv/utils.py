@@ -33,8 +33,11 @@ def getHtml(url,retry_count = 5):
     while retry_count > 0:
         try:
             res = requests.get(url, headers=headers,timeout=10)
-            res.encoding = res.apparent_encoding
-            return res.text
+            if res.apparent_encoding.lower()=='gb2312':
+                return res.text.encode("latin1").decode("gbk")
+            else:
+                res.encoding = res.apparent_encoding
+                return res.text
         except Exception as e:
             print(e)
             retry_count -= 1
