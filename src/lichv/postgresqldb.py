@@ -162,7 +162,7 @@ class PostgresqlDBService(object):
 	def getCount(self, table, input_query={}):
 		result = 0
 		query = deepcopy(input_query)
-		sql = 'select count(1) as count from '+ table + ' '
+		sql = 'select count(1) as count from "'+ table + '" '
 		where_sql = self._where(query)
 		if where_sql:
 			sql += 'where '+ where_sql 
@@ -237,7 +237,7 @@ class PostgresqlDBService(object):
 		if where_sql:
 			where_sql = 'where '+ where_sql + ' '
 
-		sql = 'delete from  '+ table + ' ' + where_sql
+		sql = 'delete from  "'+ table + '" ' + where_sql
 		return sql
 		
 	def _field(self,query):
@@ -406,5 +406,5 @@ class PostgresqlDBService(object):
 	
 if __name__ == "__main__":
 	db = PostgresqlDBService.instance(host='localhost', port=3306, user='root', passwd='123456', db='example', charset='utf8')
-	result = db.query('select * from data',())
+	result = db.query('select * from "data"',())
 	print(result)

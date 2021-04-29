@@ -1,5 +1,8 @@
-# Example Package
+# 打包上传
 
-This is a simple example package. You can use
-[https://github.com/lichv/python](https://github.com/lichv/python)
-to write your content.
+```sh
+pip install setuptools twine
+python setup.py sdist build
+twine upload dist\*
+```
+
