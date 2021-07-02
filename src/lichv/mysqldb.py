@@ -5,6 +5,7 @@ import pymysql
 import threading
 import logging
 from copy import deepcopy
+from pymysql.converters import escape_string
 
 class MysqlDBService(object):
 	_instance_lock = threading.Lock()
@@ -18,8 +19,6 @@ class MysqlDBService(object):
 	def __init__(self, *args, **kwargs):
 		self.logger = logging.getLogger('MysqlDBService')
 		self.connection_kwargs = kwargs
-		pymysql.install_as_MySQLdb()
-		setattr(pymysql, 'escape', self.mysqldb_escape)
 		self.connection()
 		
 
@@ -209,7 +208,7 @@ class MysqlDBService(object):
 			tmp = []
 			for key in columns:
 				if key in data:
-					value = pymysql.escape(str(data[key]))
+					value = escape_string(str(data[key]))
 					tmp.append(value)
 				else:
 					tmp.append('')
@@ -264,7 +263,7 @@ class MysqlDBService(object):
 					tmp = query[key]
 				for k in tmp:
 					opeartor = k
-					value = pymysql.escape(str(tmp[k]))
+					value = escape_string(str(tmp[k]))
 				sql += key + ' ' + opeartor + ' "'+ value + '" and '
 		return sql[0:-4]
 
@@ -383,15 +382,6 @@ class MysqlDBService(object):
 				if cur:
 					cur.close()
 		return count
-
-	def mysqldb_escape(self, value, conv_dict=''):
-		from pymysql.converters import encoders
-		vtype = type(value)
-		# note: you could provide a default:
-		# PY2: encoder = encoders.get(vtype, escape_str)
-		# PY3: encoder = encoders.get(vtype, escape_unicode)
-		encoder = encoders.get(vtype)
-		return encoder(value)
 
 	def close(self):
 		if self.connect:
