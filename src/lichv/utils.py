@@ -83,3 +83,14 @@ def handleURL(uri):
     result = urllib.parse.urlparse(uri)
     url = result.scheme + '://' + result.netloc + result.path
     return url
+
+def escape_string(value):
+    _escape_table = [chr(x) for x in range(128)]
+    _escape_table[0] = "\\0"
+    _escape_table[ord("\\")] = "\\\\"
+    _escape_table[ord("\n")] = "\\n"
+    _escape_table[ord("\r")] = "\\r"
+    _escape_table[ord("\032")] = "\\Z"
+    _escape_table[ord('"')] = '\\"'
+    _escape_table[ord("'")] = "\\'"
+    return value.translate(_escape_table)
