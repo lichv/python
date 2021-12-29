@@ -213,7 +213,7 @@ class MysqlDBService(object):
 				else:
 					tmp.append('')
 			values.append(tmp)
-		sql += ' (' + ', '.join(columns) + ') values '
+		sql += ' (`' + '`, `'.join(columns) + '`) values '
 		value_sql = ''
 		for value in values:
 			value_sql += ' ("' + '", "'.join(value) + '"), '
@@ -223,7 +223,7 @@ class MysqlDBService(object):
 		sql = ''
 		data_sql = ''
 		for key in data:
-			data_sql += key + '="'+str(data[key])+'", '
+			data_sql += '`'+key + '`="'+str(data[key])+'", '
 		if data_sql:
 			sql = 'update '+ table + ' set ' + data_sql[0:-2]
 		where_sql = self._where(query)
@@ -244,7 +244,7 @@ class MysqlDBService(object):
 		if type(query).__name__=='tuple':
 			query = list(query)
 		if type(query).__name__=='list':
-			sql = ','.join(query)
+			sql = '`'+'`,`'.join(query)+'`'
 		elif not query :
 			sql = '*'
 		else:
@@ -264,7 +264,7 @@ class MysqlDBService(object):
 				for k in tmp:
 					opeartor = k
 					value = escape_string(str(tmp[k]))
-				sql += key + ' ' + opeartor + ' "'+ value + '" and '
+				sql += key + ' `' + opeartor + '` "'+ value + '" and '
 		return sql[0:-4]
 
 	def _order(self,orderby):
@@ -272,7 +272,7 @@ class MysqlDBService(object):
 		for item in orderby:
 			order = item[0]
 			sort = 'asc' if item[1]==1 else 'desc'
-			sql += order + ' ' + sort + ','
+			sql += '`'+order + '` ' + sort + ','
 
 		return sql[0:-1]
 
