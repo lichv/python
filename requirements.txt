@@ -9,7 +9,7 @@ pandas==0.23.4
 oss2==2.8.0
 pymongo==3.8.0
 PyMySQL==0.9.3
-redis==3.2.1
+redis==4.4.4
 requests==2.21.0
 selenium==3.141.0
 tornado==6.0.2
